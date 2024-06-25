@@ -8,7 +8,6 @@ class SimpleGridComponent extends CBitrixComponent
 
     public function executeComponent()
     {
-        $gridId = self::GRID_ID;
         $gridRows = [];
 
         $gridFilter = $this->getFilterFields();
@@ -27,11 +26,22 @@ class SimpleGridComponent extends CBitrixComponent
                     'ID' => $item->getId(),
                     'TITLE' => $item->getTitle(),
                     'CREATED_DATE' => $item->getCreatedDate()
+                ],
+                'actions' => [
+                    [
+                        'text' => 'Открыть задачу',
+                        'onclick' => "BX.SidePanel.Instance.open('/company/personal/user/1/tasks/task/view/{$item->getId()}/')",
+                        'default' => true
+                    ],
+                    [
+                        'text' => 'Удалить',
+                        'onclick' => "confirm('Удалить задачу \"{$item->getTitle()}\"?')",
+                    ]
                 ]
             ];
         }
 
-        $this->arResult['GRID_ID'] = $gridId;
+        $this->arResult['GRID_ID'] = self::GRID_ID;
         $this->arResult['GRID_FILTER'] = $gridFilter;
         $this->arResult['GRID_COLUMNS'] = $this->getGridColumns();
         $this->arResult['GRID_ROWS'] = $gridRows;
