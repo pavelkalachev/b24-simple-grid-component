@@ -4,6 +4,8 @@ class SimpleGridComponent extends CBitrixComponent
 {
     const GRID_ID = 'SIMPLE_GRID';
 
+    protected $gridOptions;
+
     public function executeComponent()
     {
         $gridId = self::GRID_ID;
@@ -14,6 +16,7 @@ class SimpleGridComponent extends CBitrixComponent
 
         $items = $entityRepository::getList([
             'select' => ['*'],
+            'order' => $this->getEntitySort(),
             'filter' => $this->getEntityFilter($gridFilter),
         ]);
 
@@ -65,16 +68,19 @@ class SimpleGridComponent extends CBitrixComponent
             [
                 'id' => 'ID',
                 'name' => 'ID задачи',
+                'sort' => 'ID',
                 'default' => true
             ],
             [
                 'id' => 'TITLE',
                 'name' => 'Заголовок',
+                'sort' => 'TITLE',
                 'default' => true
             ],
             [
                 'id' => 'CREATED_DATE',
                 'name' => 'Дата создания',
+                'sort' => 'CREATED_DATE',
                 'default' => true
             ],
         ];
@@ -102,5 +108,33 @@ class SimpleGridComponent extends CBitrixComponent
         }
 
         return $logicFilter;
+    }
+
+    protected function getEntitySort()
+    {
+        $gridOptions = $this->getGridOptions(self::GRID_ID);
+
+        $sort = $gridOptions->getSorting([
+            'sort' => [
+                'ID' => 'DESC'
+            ],
+            'vars' => [
+                'by' => 'by',
+                'order' => 'order'
+            ]
+        ]);
+
+        return $sort['sort'];
+    }
+
+    protected function getGridOptions()
+    {
+        if (is_object($this->gridOptions)) {
+            return $this->gridOptions;
+        }
+
+        $this->gridOptions = new Bitrix\Main\Grid\Options(self::GRID_ID);
+
+        return $this->gridOptions;
     }
 }
