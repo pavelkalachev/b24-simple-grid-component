@@ -1,6 +1,15 @@
 <?php if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die(); ?>
 
 <?php
+\Bitrix\UI\Toolbar\Facade\Toolbar::addFilter([
+    'FILTER_ID' => $arResult['GRID_ID'],
+    'GRID_ID' => $arResult['GRID_ID'],
+    'FILTER' => $arResult['GRID_FILTER'],
+    'ENABLE_LIVE_SEARCH' => true,
+    'ENABLE_LABEL' => true
+]); ?>
+
+<?php
 $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', [
     'GRID_ID' => $arResult['GRID_ID'],
     'COLUMNS' => $arResult['GRID_COLUMNS'],

@@ -2,16 +2,19 @@
 
 class SimpleGridComponent extends CBitrixComponent
 {
+    const GRID_ID = 'SIMPLE_GRID';
+
     public function executeComponent()
     {
-        $gridId = 'SIMPLE_GRID';
+        $gridId = self::GRID_ID;
         $gridRows = [];
 
         $gridFilter = $this->getFilterFields();
         $entityRepository = $this->getEntityRepository();
 
         $items = $entityRepository::getList([
-            'select' => ['*']
+            'select' => ['*'],
+            'filter' => $this->getEntityFilter($gridFilter),
         ]);
 
         while ($item = $items->fetchObject()) {
@@ -44,7 +47,7 @@ class SimpleGridComponent extends CBitrixComponent
             [
                 'id' => 'TITLE',
                 'name' => 'Название',
-                'type' => 'date',
+                'type' => 'string',
                 'default' => true
             ],
             [
@@ -75,5 +78,29 @@ class SimpleGridComponent extends CBitrixComponent
                 'default' => true
             ],
         ];
+    }
+
+    protected function getEntityFilter($fields)
+    {
+        $filterOption = new \Bitrix\Main\UI\Filter\Options(self::GRID_ID);
+        $filterFields = $filterOption->getFilter($fields);
+
+        $logicFilter = \Bitrix\Main\UI\Filter\Type::getLogicFilter($filterFields, $fields);
+
+        if (!empty($filterFields['FIND'])) {
+            $findFilter = [
+                'LOGIC' => 'OR', [
+                    '%TITLE' => $filterFields['FIND']
+                ]
+            ];
+
+            if (!empty($logicFilter)) {
+                $logicFilter[] = $findFilter;
+            } else {
+                $logicFilter = $findFilter;
+            }
+        }
+
+        return $logicFilter;
     }
 }
