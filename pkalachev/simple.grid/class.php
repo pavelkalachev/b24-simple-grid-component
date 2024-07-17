@@ -13,11 +13,18 @@ class SimpleGridComponent extends CBitrixComponent
         $gridFilter = $this->getFilterFields();
         $entityRepository = $this->getEntityRepository();
 
+        $nav = $this->initNav($this->getGridOptions(self::GRID_ID));
+
         $items = $entityRepository::getList([
             'select' => ['*'],
             'order' => $this->getEntitySort(),
             'filter' => $this->getEntityFilter($gridFilter),
+            'count_total' => true,
+            'offset' => $nav->getOffset(),
+            'limit' => $nav->getLimit()
         ]);
+
+        $nav->setRecordCount($items->getCount());
 
         while ($item = $items->fetchObject()) {
             $gridRows[] = [
@@ -40,6 +47,8 @@ class SimpleGridComponent extends CBitrixComponent
                 ]
             ];
         }
+
+        $this->arResult['NAV'] = $nav;
 
         $this->arResult['GRID_ID'] = self::GRID_ID;
         $this->arResult['GRID_FILTER'] = $gridFilter;
@@ -146,5 +155,24 @@ class SimpleGridComponent extends CBitrixComponent
         $this->gridOptions = new Bitrix\Main\Grid\Options(self::GRID_ID);
 
         return $this->gridOptions;
+    }
+
+    protected function initNav($gridOptions)
+    {
+        $navParams = $gridOptions->getNavParams();
+
+        $nav = new Bitrix\Main\UI\PageNavigation($gridOptions->getId());
+
+        $pageSizes = [];
+        foreach (['1', '5', '10', '20', '30', '50', '100'] as $index) {
+            $pageSizes[] = ['NAME' => $index, 'VALUE' => $index];
+        }
+
+        $nav->allowAllRecords(true)
+            ->setPageSize($navParams['nPageSize'])
+            ->setPageSizes($pageSizes)
+            ->initFromUri();
+
+        return $nav;
     }
 }

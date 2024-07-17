@@ -10,10 +10,18 @@
 ]); ?>
 
 <?php
+$nav = $arResult['NAV'];
 $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', [
     'GRID_ID' => $arResult['GRID_ID'],
     'COLUMNS' => $arResult['GRID_COLUMNS'],
     'ROWS' => $arResult['GRID_ROWS'],
+    'NAV_OBJECT' => $nav,
+    'DEFAULT_PAGE_SIZE' => $nav->getPageSize(),
+    'PAGE_SIZES' => $nav->getPageSizes(),
+    'TOTAL_ROWS_COUNT' => $nav->getRecordCount(),
+    'NAV_PARAM_NAME' => $nav->getId(),
+    'CURRENT_PAGE' => $nav->getCurrentPage(),
+    'PAGE_COUNT' => $nav->getPageCount(),
     'AJAX_MODE' => 'Y',
     'AJAX_ID' => \CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
     'AJAX_OPTION_JUMP' => 'N',
